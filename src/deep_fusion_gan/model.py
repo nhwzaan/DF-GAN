@@ -9,10 +9,14 @@ from torch import Tensor
 from torch.utils.data import DataLoader
 from tqdm.auto import trange
 
-from src.discriminator.model import Discriminator
-from src.generator.model import Generator
-from src.objects.utils import prepare_data
-from src.text_encoder.model import RNNEncoder
+from discriminator.model import Discriminator
+from generator.model import Generator
+from objects.utils import prepare_data
+from text_encoder.model import RNNEncoder
+# from src.discriminator.model import Discriminator
+# from src.generator.model import Generator
+# from src.objects.utils import prepare_data
+# from src.text_encoder.model import RNNEncoder
 
 
 class DeepFusionGAN:
@@ -128,9 +132,11 @@ class DeepFusionGAN:
             d_losses_epoch.append(np.mean(d_losses))
             d_gp_losses_epoch.append(np.mean(d_gp_losses))
 
-            if (epoch + 1) % 10 == 0:
-                self._save_fake_image(fake_images, epoch)
-                self._save_gen_weights(epoch)
+            self._save_fake_image(fake_images, epoch)
+            self._save_gen_weights(epoch)
+            # if (epoch + 1) % 10 == 0:
+            #     self._save_fake_image(fake_images, epoch)
+            #     self._save_gen_weights(epoch)
 
         return g_losses_epoch, d_losses_epoch, d_gp_losses_epoch
 

@@ -5,9 +5,12 @@ import torch
 from PIL import Image
 from torch import Tensor
 
-from src.generator.model import Generator
-from src.objects.utils import prepare_data
-from src.text_encoder.model import RNNEncoder
+from generator.model import Generator
+from objects.utils import prepare_data
+from text_encoder.model import RNNEncoder
+# from src.generator.model import Generator
+# from src.objects.utils import prepare_data
+# from src.text_encoder.model import RNNEncoder
 
 
 @torch.no_grad()

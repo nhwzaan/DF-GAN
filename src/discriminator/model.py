@@ -2,7 +2,8 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from src.discriminator.residual_block import ResidualBlockD
+from discriminator.residual_block import ResidualBlockD
+# from src.discriminator.residual_block import ResidualBlockD
 
 
 class Discriminator(nn.Module):

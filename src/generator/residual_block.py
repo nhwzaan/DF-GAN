@@ -3,7 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 
-from src.generator.fusion_block import AffineBlock
+from generator.fusion_block import AffineBlock
+# from src.generator.fusion_block import AffineBlock
 
 
 class ResidualBlockG(nn.Module):

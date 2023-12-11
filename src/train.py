@@ -1,17 +1,20 @@
 import os
 from typing import List, Tuple
 
-from src.deep_fusion_gan.model import DeepFusionGAN
-from src.utils import create_loader, fix_seed
+from deep_fusion_gan.model import DeepFusionGAN
+from utils import create_loader, fix_seed
+# from src.deep_fusion_gan.model import DeepFusionGAN
+# from src.utils import create_loader, fix_seed
 
 
 def train() -> Tuple[List[float], List[float], List[float]]:
     fix_seed()
-
-    data_path = "../data"
-    encoder_weights_path = "../text_encoder_weights/text_encoder200.pth"
-    image_save_path = "../gen_images"
-    gen_path_save = "../gen_weights"
+    
+    current_working_dir = os.getcwd()
+    data_path = os.path.join(current_working_dir, "data")
+    encoder_weights_path = os.path.join(current_working_dir, "text_encoder_weights/text_encoder200.pth")
+    image_save_path = os.path.join(current_working_dir, "gen_images")
+    gen_path_save = os.path.join(current_working_dir, "gen_weights")
 
     os.makedirs(image_save_path, exist_ok=True)
     os.makedirs(gen_path_save, exist_ok=True)

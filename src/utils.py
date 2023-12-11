@@ -7,7 +7,8 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision.transforms import transforms
 
-from src.objects.dataset import DFGANDataset
+from objects.dataset import DFGANDataset
+# from src.objects.dataset import DFGANDataset
 
 
 def create_loader(imsize: int, batch_size: int, data_dir: str, split: str) -> DataLoader:

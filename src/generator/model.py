@@ -2,7 +2,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 
-from src.generator.residual_block import ResidualBlockG
+from generator.residual_block import ResidualBlockG
+# from src.generator.residual_block import ResidualBlockG
 
 
 class Generator(nn.Module):
