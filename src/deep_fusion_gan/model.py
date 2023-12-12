@@ -84,7 +84,7 @@ class DeepFusionGAN:
         g_losses_epoch, d_losses_epoch, d_gp_losses_epoch = [], [], []
         training_times = []
         epoch_current = -1
-        if (checkpoint_state is dict):
+        if (type(checkpoint_state) is dict):
             g_losses_epoch, d_losses_epoch, d_gp_losses_epoch = checkpoint_state['g_losses_epoch'], checkpoint_state['d_losses_epoch'], checkpoint_state['d_gp_losses_epoch']
             training_times = checkpoint_state['training_times']
             epoch_current = checkpoint_state['epoch_id']
