@@ -108,9 +108,10 @@ class DeepFusionGAN:
                 batch_size = images.shape[0]
                 batch_size_for_state_save = batch_size
                 
-                if batch_size != checkpoint_state['batch_size']:
-                    print('ERROR!!! Not same batch size last checkpoint\nIn previous checkpoint, batch size is ' + str(checkpoint_state['batch_size']) + ', but get batch size ' + batch_size)
-                    return g_losses_epoch, d_losses_epoch, d_gp_losses_epoch
+                if checkpoint_state is not None:
+                    if batch_size != checkpoint_state['batch_size']:
+                        print('ERROR!!! Not same batch size last checkpoint\nIn previous checkpoint, batch size is ' + str(checkpoint_state['batch_size']) + ', but get batch size ' + batch_size)
+                        return g_losses_epoch, d_losses_epoch, d_gp_losses_epoch
 
                 sentence_embeds = self.text_encoder(captions, captions_len).detach()
 
