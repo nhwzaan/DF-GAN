@@ -114,3 +114,14 @@ def save_training_times_to_gdrive(src_file=None):
         des_file = os.path.join(des_path, src_file.split('/')[-1])
         os.makedirs(des_path, exist_ok=True)
         shutil.copyfile(src_file, des_file)
+        
+        
+def save_model_to_gdrive(src_file=None):
+    # Note: First!! You need to mount your drive with your notebook
+    if src_file is None:
+        print("Nothing to save!!!")
+    else:
+        des_path = "/content/gdrive/MyDrive/DF-GAN/checkpoint"
+        des_file = os.path.join(des_path, src_file.split('/')[-1])
+        os.makedirs(des_path, exist_ok=True)
+        shutil.copyfile(src_file, des_file)

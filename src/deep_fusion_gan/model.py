@@ -4,6 +4,7 @@ from typing import Tuple, List
 from utils import save_gen_weights_to_gdrive, save_gen_losses_to_gdrive, save_training_times_to_gdrive
 import pickle
 import time
+from collections import OrderedDict
 
 import numpy as np
 import torch
@@ -24,11 +25,12 @@ from text_encoder.model import RNNEncoder
 
 
 class DeepFusionGAN:
-    def __init__(self, n_words, encoder_weights_path: str, image_save_path: str, gen_path_save: str, loss_path_save: str, training_time_path_save: str):
+    def __init__(self, n_words, encoder_weights_path: str, image_save_path: str, gen_path_save: str, loss_path_save: str, training_time_path_save: str, model_path_save: str):
         super().__init__()
         self.image_save_path = image_save_path
         self.gen_path_save = gen_path_save
         self.loss_path_save = loss_path_save
+        self.model_path_save = model_path_save
         self.training_time_path_save = training_time_path_save
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -78,16 +80,24 @@ class DeepFusionGAN:
 
         return grad_norm
 
-    def fit(self, train_loader: DataLoader, num_epochs: int = 600) -> Tuple[List[float], List[float], List[float]]:
+    def fit(self, train_loader: DataLoader, num_epochs: int = 600, checkpoint_state: OrderedDict = None) -> Tuple[List[float], List[float], List[float]]:
         g_losses_epoch, d_losses_epoch, d_gp_losses_epoch = [], [], []
         training_times = []
+        epoch_current = -1
+        if (checkpoint_state is OrderedDict):
+            g_losses_epoch, d_losses_epoch, d_gp_losses_epoch = checkpoint_state['g_losses_epoch'], checkpoint_state['d_losses_epoch'], checkpoint_state['d_gp_losses_epoch']
+            training_times = checkpoint_state['training_times']
+            epoch_current = checkpoint_state['epoch_id']
+        
         for epoch in trange(num_epochs, desc="Train Deep Fusion GAN"):
             
             g_losses, d_losses, d_gp_losses = [], [], []
+            batch_size_for_state_save = None
             start_time = time.time()
             for batch in train_loader:
                 images, captions, captions_len, _ = prepare_data(batch, self.device)
                 batch_size = images.shape[0]
+                batch_size_for_state_save = batch_size
 
                 sentence_embeds = self.text_encoder(captions, captions_len).detach()
 
@@ -143,9 +153,10 @@ class DeepFusionGAN:
             training_times.append(end_time - start_time)
 
             self._save_fake_image(fake_images, epoch)
-            self._save_gen_weights(epoch)
-            self._save_losses_epoch(epoch, g_losses_epoch, d_losses_epoch, d_gp_losses_epoch)
-            self._save_trainings_time_epoch(epoch, training_times)
+            # self._save_gen_weights(epoch)
+            # self._save_losses_epoch(epoch, g_losses_epoch, d_losses_epoch, d_gp_losses_epoch)
+            # self._save_trainings_time_epoch(epoch, training_times)
+            self._save_model(epoch, batch_size_for_state_save, g_losses_epoch, d_losses_epoch, d_gp_losses_epoch, training_times)
             # if (epoch + 1) % 10 == 0:
             #     self._save_fake_image(fake_images, epoch)
             #     self._save_gen_weights(epoch)
@@ -161,6 +172,21 @@ class DeepFusionGAN:
         torch.save(self.generator.state_dict(), gen_path)
         
         save_gen_weights_to_gdrive(gen_path)
+        
+    def _save_model(self, epoch: int, batch_size, g_losses_epoch, d_losses_epoch, d_gp_losses_epoch, training_times):
+        model_save_path = os.path.join(self.model_path_save, f"model_checkpoint_{epoch}.pth")
+        state = {'model': {'netG': self.generator.state_dict(), 'netD': self.discriminator.state_dict()}, \
+                'optimizers': {'g_optim': self.g_optim.state_dict(), 'd_optim': self.d_optim.state_dict()}, \
+                'epoch_id': epoch, \
+                'batch_size': batch_size, \
+                'g_losses_epoch': g_losses_epoch, \
+                'd_losses_epoch': d_losses_epoch, \
+                'd_gp_losses_epoch': d_gp_losses_epoch, \
+                'training_times': training_times, \
+                'Note for Information detail': 'epoch_id from 0 --> n-1, EX: N = 600 epoches --> epoch_id from 0 --> 599'}
+        torch.save(state, model_save_path)
+        
+        save_model_to_gdrive(model_save_path)
     
     def _save_losses_epoch(self, epoch:int, g_losses_epoch, d_losses_epoch, d_gp_losses_epoch):
         # Note We save list loss, from epoch 1 --> current epoch

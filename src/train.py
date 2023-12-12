@@ -17,11 +17,13 @@ def train() -> Tuple[List[float], List[float], List[float]]:
     gen_path_save = os.path.join(current_working_dir, "gen_weights")
     loss_path_save = os.path.join(current_working_dir, "gen_losses")
     training_time_path_save = os.path.join(current_working_dir, "training_times")
+    model_path_save=os.path.join(current_working_dir, "model_checkpoint")
 
     os.makedirs(image_save_path, exist_ok=True)
     os.makedirs(gen_path_save, exist_ok=True)
     os.makedirs(loss_path_save, exist_ok=True)
     os.makedirs(training_time_path_save, exist_ok=True)
+    os.makedirs(model_path_save, exist_ok=True)
 
     train_loader = create_loader(256, 24, data_path, "train")
     model = DeepFusionGAN(n_words=train_loader.dataset.n_words,
@@ -29,7 +31,8 @@ def train() -> Tuple[List[float], List[float], List[float]]:
                           image_save_path=image_save_path,
                           gen_path_save=gen_path_save,
                           loss_path_save=loss_path_save,
-                          training_time_path_save=training_time_path_save)
+                          training_time_path_save=training_time_path_save,
+                          model_path_save=model_path_save)
 
     return model.fit(train_loader)
 
