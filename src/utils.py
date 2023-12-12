@@ -85,7 +85,7 @@ def plot_metrics(fid: List[float], iscore: List[float], epochs: Tuple[int],
     
 def save_gen_weights_to_gdrive(src_file=None):
     # Note: First!! You need to mount your drive with your notebook
-    if path is None:
+    if src_file is None:
         print("Nothing to save!!!")
     else:
         des_path = "/content/gdrive/MyDrive/DF-GAN/gen_weights"
@@ -96,7 +96,7 @@ def save_gen_weights_to_gdrive(src_file=None):
 
 def save_gen_losses_to_gdrive(src_file=None):
     # Note: First!! You need to mount your drive with your notebook
-    if path is None:
+    if src_file is None:
         print("Nothing to save!!!")
     else:
         des_path = "/content/gdrive/MyDrive/DF-GAN/gen_losses"
@@ -107,7 +107,7 @@ def save_gen_losses_to_gdrive(src_file=None):
 
 def save_training_times_to_gdrive(src_file=None):
     # Note: First!! You need to mount your drive with your notebook
-    if path is None:
+    if src_file is None:
         print("Nothing to save!!!")
     else:
         des_path = "/content/gdrive/MyDrive/DF-GAN/training_times"
