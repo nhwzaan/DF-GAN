@@ -1,7 +1,7 @@
 import os.path
 from typing import Tuple, List
 
-from utils import save_gen_weights_to_gdrive, save_gen_losses_to_gdrive, save_training_times_to_gdrive
+from utils import save_gen_weights_to_gdrive, save_gen_losses_to_gdrive, save_training_times_to_gdrive, save_model_to_gdrive
 import pickle
 import time
 from collections import OrderedDict
