@@ -179,7 +179,7 @@ class DeepFusionGAN:
         save_gen_losses_to_gdrive(loss_path_d)
         save_gen_losses_to_gdrive(loss_path_d_gp)
         
-    def _save_trainings_time_epoch(self, epoch:int, trainings_time):
+    def _save_trainings_time_epoch(self, epoch:int, training_times):
         # Note We save list training times, from epoch 1 --> current epoch
         training_time_path = os.path.join(self.training_time_path_save, f"training_times_{epoch}.pth")
         
