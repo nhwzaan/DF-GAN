@@ -195,8 +195,8 @@ class DeepFusionGAN:
                 'd_losses_epoch': d_losses_epoch, \
                 'd_gp_losses_epoch': d_gp_losses_epoch, \
                 'training_times': training_times, \
-                'device': self.device, \
                 'Note for Information detail': 'epoch_id from 0 --> n-1, EX: N = 600 epoches --> epoch_id from 0 --> 599'}
+        # 'device': self.device, \
         torch.save(state, model_save_path)
         
         save_model_to_gdrive(model_save_path)
