@@ -2,6 +2,7 @@ import os
 from typing import List, Tuple
 
 import torch
+import argparse
 
 from deep_fusion_gan.model import DeepFusionGAN
 from utils import create_loader, fix_seed
