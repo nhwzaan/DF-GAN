@@ -17,7 +17,7 @@ def train() -> Tuple[List[float], List[float], List[float]]:
     gen_path_save = os.path.join(current_working_dir, "gen_weights")
     loss_path_save = os.path.join(current_working_dir, "gen_losses")
     training_time_path_save = os.path.join(current_working_dir, "training_times")
-    model_path_save=os.path.join(current_working_dir, "model_checkpoint")
+    model_path_save=os.path.join(current_working_dir, "model_checkpoints")
 
     os.makedirs(image_save_path, exist_ok=True)
     os.makedirs(gen_path_save, exist_ok=True)

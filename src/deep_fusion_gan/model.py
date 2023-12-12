@@ -80,7 +80,7 @@ class DeepFusionGAN:
 
         return grad_norm
 
-    def fit(self, train_loader: DataLoader, num_epochs: int = 600, checkpoint_state: OrderedDict = None) -> Tuple[List[float], List[float], List[float]]:
+    def fit(self, train_loader: DataLoader, num_epochs: int = 600, checkpoint_state: dict = None) -> Tuple[List[float], List[float], List[float]]:
         g_losses_epoch, d_losses_epoch, d_gp_losses_epoch = [], [], []
         training_times = []
         epoch_current = -1
@@ -88,8 +88,16 @@ class DeepFusionGAN:
             g_losses_epoch, d_losses_epoch, d_gp_losses_epoch = checkpoint_state['g_losses_epoch'], checkpoint_state['d_losses_epoch'], checkpoint_state['d_gp_losses_epoch']
             training_times = checkpoint_state['training_times']
             epoch_current = checkpoint_state['epoch_id']
+            
+            self.generator.load_state_dict(checkpoint_state['model']['netG'])
+            self.discriminator.load_state_dict(checkpoint_state['model']['netD'])
+            self.g_optim.load_state_dict(checkpoint_state['optimizers']['g_optim'])
+            self.d_optim.load_state_dict(checkpoint_state['optimizers']['d_optim'])
+            
         
         for epoch in trange(num_epochs, desc="Train Deep Fusion GAN"):
+            if epoch_current >= epoch:
+                continue
             
             g_losses, d_losses, d_gp_losses = [], [], []
             batch_size_for_state_save = None
@@ -98,6 +106,10 @@ class DeepFusionGAN:
                 images, captions, captions_len, _ = prepare_data(batch, self.device)
                 batch_size = images.shape[0]
                 batch_size_for_state_save = batch_size
+                
+                if batch_size != checkpoint_state['batch_size']:
+                    print('ERROR!!! Not same batch size last checkpoint\nIn previous checkpoint, batch size is ' + str(checkpoint_state['batch_size']) + ', but get batch size ' + batch_size)
+                    return g_losses_epoch, d_losses_epoch, d_gp_losses_epoch
 
                 sentence_embeds = self.text_encoder(captions, captions_len).detach()
 
@@ -183,6 +195,7 @@ class DeepFusionGAN:
                 'd_losses_epoch': d_losses_epoch, \
                 'd_gp_losses_epoch': d_gp_losses_epoch, \
                 'training_times': training_times, \
+                'device': self.device, \
                 'Note for Information detail': 'epoch_id from 0 --> n-1, EX: N = 600 epoches --> epoch_id from 0 --> 599'}
         torch.save(state, model_save_path)
         

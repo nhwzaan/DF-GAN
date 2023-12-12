@@ -121,7 +121,7 @@ def save_model_to_gdrive(src_file=None):
     if src_file is None:
         print("Nothing to save!!!")
     else:
-        des_path = "/content/gdrive/MyDrive/DF-GAN/checkpoint"
+        des_path = "/content/gdrive/MyDrive/DF-GAN/checkpoints"
         des_file = os.path.join(des_path, src_file.split('/')[-1])
         os.makedirs(des_path, exist_ok=True)
         shutil.copyfile(src_file, des_file)
