@@ -1,6 +1,10 @@
 import os.path
 from typing import Tuple, List
 
+from utils import save_gen_weights_to_gdrive, save_gen_losses_to_gdrive, save_training_times_to_gdrive
+import pickle
+import time
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -20,10 +24,12 @@ from text_encoder.model import RNNEncoder
 
 
 class DeepFusionGAN:
-    def __init__(self, n_words, encoder_weights_path: str, image_save_path: str, gen_path_save: str):
+    def __init__(self, n_words, encoder_weights_path: str, image_save_path: str, gen_path_save: str, loss_path_save: str, training_time_path_save: str):
         super().__init__()
         self.image_save_path = image_save_path
         self.gen_path_save = gen_path_save
+        self.loss_path_save = loss_path_save
+        self.training_time_path_save = training_time_path_save
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -74,9 +80,11 @@ class DeepFusionGAN:
 
     def fit(self, train_loader: DataLoader, num_epochs: int = 600) -> Tuple[List[float], List[float], List[float]]:
         g_losses_epoch, d_losses_epoch, d_gp_losses_epoch = [], [], []
+        training_times = []
         for epoch in trange(num_epochs, desc="Train Deep Fusion GAN"):
-
+            
             g_losses, d_losses, d_gp_losses = [], [], []
+            start_time = time.time()
             for batch in train_loader:
                 images, captions, captions_len, _ = prepare_data(batch, self.device)
                 batch_size = images.shape[0]
@@ -127,13 +135,17 @@ class DeepFusionGAN:
                 self.g_optim.step()
 
                 g_losses.append(g_loss.item())
+            end_time = time.time()
 
             g_losses_epoch.append(np.mean(g_losses))
             d_losses_epoch.append(np.mean(d_losses))
             d_gp_losses_epoch.append(np.mean(d_gp_losses))
+            training_times.append(end_time - start_time)
 
             self._save_fake_image(fake_images, epoch)
             self._save_gen_weights(epoch)
+            self._save_losses_epoch(epoch, g_losses_epoch, d_losses_epoch, d_gp_losses_epoch)
+            self._save_trainings_time_epoch(epoch, training_times)
             # if (epoch + 1) % 10 == 0:
             #     self._save_fake_image(fake_images, epoch)
             #     self._save_gen_weights(epoch)
@@ -147,3 +159,31 @@ class DeepFusionGAN:
     def _save_gen_weights(self, epoch: int):
         gen_path = os.path.join(self.gen_path_save, f"gen_{epoch}.pth")
         torch.save(self.generator.state_dict(), gen_path)
+        
+        save_gen_weights_to_gdrive(gen_path)
+    
+    def _save_losses_epoch(self, epoch:int, g_losses_epoch, d_losses_epoch, d_gp_losses_epoch):
+        # Note We save list loss, from epoch 1 --> current epoch
+        loss_path_g = os.path.join(self.loss_path_save, f"g_losses_epoch_{epoch}.pth")
+        loss_path_d = os.path.join(self.loss_path_save, f"d_losses_epoch_{epoch}.pth")
+        loss_path_d_gp = os.path.join(self.loss_path_save, f"d_gp_losses_epoch_{epoch}.pth")
+        
+        with open(loss_path_g, 'wb') as file:
+            pickle.dump(g_losses_epoch, file)
+        with open(loss_path_d, 'wb') as file:
+            pickle.dump(d_losses_epoch, file)
+        with open(loss_path_d_gp, 'wb') as file:
+            pickle.dump(d_gp_losses_epoch, file)
+            
+        save_gen_losses_to_gdrive(loss_path_g)
+        save_gen_losses_to_gdrive(loss_path_d)
+        save_gen_losses_to_gdrive(loss_path_d_gp)
+        
+    def _save_trainings_time_epoch(self, epoch:int, trainings_time):
+        # Note We save list training times, from epoch 1 --> current epoch
+        training_time_path = os.path.join(self.training_time_path_save, f"training_times_{epoch}.pth")
+        
+        with open(training_time_path, 'wb') as file:
+            pickle.dump(training_times, file)
+        
+        save_training_times_to_gdrive(training_time_path)

@@ -1,6 +1,9 @@
 import random
 from typing import List, Tuple
 
+import os
+import shutil
+
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -78,3 +81,36 @@ def plot_metrics(fid: List[float], iscore: List[float], epochs: Tuple[int],
     plt.tight_layout()
     plt.savefig(path_save)
     plt.show()
+    
+    
+def save_gen_weights_to_gdrive(src_file=None):
+    # Note: First!! You need to mount your drive with your notebook
+    if path is None:
+        print("Nothing to save!!!")
+    else:
+        des_path = "/content/gdrive/MyDrive/DF-GAN/gen_weights"
+        des_file = os.path.join(des_path, src_file.split('/')[-1])
+        os.makedirs(des_path, exist_ok=True)
+        shutil.copyfile(src_file, des_file)
+
+
+def save_gen_losses_to_gdrive(src_file=None):
+    # Note: First!! You need to mount your drive with your notebook
+    if path is None:
+        print("Nothing to save!!!")
+    else:
+        des_path = "/content/gdrive/MyDrive/DF-GAN/gen_losses"
+        des_file = os.path.join(des_path, src_file.split('/')[-1])
+        os.makedirs(des_path, exist_ok=True)
+        shutil.copyfile(src_file, des_file)
+        
+
+def save_training_times_to_gdrive(src_file=None):
+    # Note: First!! You need to mount your drive with your notebook
+    if path is None:
+        print("Nothing to save!!!")
+    else:
+        des_path = "/content/gdrive/MyDrive/DF-GAN/training_times"
+        des_file = os.path.join(des_path, src_file.split('/')[-1])
+        os.makedirs(des_path, exist_ok=True)
+        shutil.copyfile(src_file, des_file)
