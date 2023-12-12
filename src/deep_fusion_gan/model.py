@@ -96,8 +96,8 @@ class DeepFusionGAN:
             
         
         for epoch in trange(num_epochs, desc="Train Deep Fusion GAN"):
+            print('', end='')
             if epoch_current >= epoch:
-                print('', end='')
                 continue
             
             g_losses, d_losses, d_gp_losses = [], [], []
