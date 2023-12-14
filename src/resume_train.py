@@ -39,8 +39,10 @@ def train(args) -> Tuple[List[float], List[float], List[float]]:
     os.makedirs(training_time_path_save, exist_ok=True)
     os.makedirs(model_path_save, exist_ok=True)
 
-    train_loader = create_loader(256, 24, data_path, "train")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    checkpoint=torch.load(args.checkpoint, map_location=device)
+    batch_size=checkpoint['batch_size']
+    train_loader = create_loader(256, batch_size, data_path, "train")
     model = DeepFusionGAN(n_words=train_loader.dataset.n_words,
                           encoder_weights_path=encoder_weights_path,
                           image_save_path=image_save_path,
@@ -49,7 +51,7 @@ def train(args) -> Tuple[List[float], List[float], List[float]]:
                           training_time_path_save=training_time_path_save,
                           model_path_save=model_path_save)
 
-    return model.fit(train_loader=train_loader, num_epochs=args.numEpochs, checkpoint_state=torch.load(args.checkpoint, map_location=device))
+    return model.fit(train_loader=train_loader, num_epochs=args.numEpochs, checkpoint_state=checkpoint)
 
 
 if __name__ == '__main__':
