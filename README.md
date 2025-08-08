@@ -1,6 +1,3 @@
-# This repo is copy from [repo Deep_Fusion_GAN of Nikolay Karasov](https://github.com/nkarasovd/Deep_Fusion_GAN)
-In this repo, we change some Code lines to possible for Implement on Google Colab notebook
-
 # Deep Fusion Generative Adversarial Networks for Text-to-Image Synthesis
 
 A PyTorch implementation of
